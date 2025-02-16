@@ -53,14 +53,7 @@ if __name__ == '__main__':
 
                 # Print
                 message = f"(epoch: {epoch}, iters: {epoch_iter}, time: {optimize_time:.3f}, data: {t_data:.3f}) "
-                
-                for k, v in losses.items():
-                    if k == "NCE_List":
-                        for layer, nce_loss in enumerate(v):
-                            message += f"{k} Loss_{layer}: {nce_loss:.3f} "
-                    else:
-                        message += f"{k}: {v:.3f} "
-                
+                message += " ".join(f"{k}: {v:.3f}" for k, v in losses.items())
                 print(message)
 
                 #visualizer.print_current_losses(epoch, epoch_iter, float(epoch_iter) / dataset_size, losses, optimize_time, t_data)
