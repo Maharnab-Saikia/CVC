@@ -5,6 +5,7 @@ from data import create_dataset
 from models import create_model
 #from util.visualizer import Visualizer
 #from util.visualizer import writer
+from tqdm.auto import tqdm
 import numpy as np
 
 
@@ -23,13 +24,13 @@ if __name__ == '__main__':
     optimize_time = 0.1
 
     times = []
-    for epoch in range(opt.epoch_count, opt.n_epochs + opt.n_epochs_decay + 1):    # outer loop for different epochs; we save the model by <epoch_count>, <epoch_count>+<save_latest_freq>
+    for epoch in tqdm(range(opt.epoch_count, opt.n_epochs + opt.n_epochs_decay + 1), desc="Training"):    # outer loop for different epochs; we save the model by <epoch_count>, <epoch_count>+<save_latest_freq>
         epoch_start_time = time.time()  # timer for entire epoch
         iter_data_time = time.time()    # timer for data loading per iteration
         epoch_iter = 0                  # the number of training iterations in current epoch, reset to 0 every epoch
 
         dataset.set_epoch(epoch)
-        for i, data in enumerate(dataset):  # inner loop within one epoch
+        for i, data in tqdm(enumerate(dataset), leave=False, desc=f"{epoch}/{opt.n_epochs + opt.n_epochs_decay}"):  # inner loop within one epoch
             iter_start_time = time.time()  # timer for computation per iteration
             if total_iters % opt.print_freq == 0:
                 t_data = iter_start_time - iter_data_time
@@ -54,7 +55,7 @@ if __name__ == '__main__':
                 # Print
                 message = f"(epoch: {epoch}, iters: {epoch_iter}, time: {optimize_time:.3f}, data: {t_data:.3f}) "
                 message += " ".join(f"{k}: {v:.3f}" for k, v in losses.items() if k != "NCE_List")
-                print(len(data['A']) , len(dataset))
+                #print(message)
 
                 #visualizer.print_current_losses(epoch, epoch_iter, float(epoch_iter) / dataset_size, losses, optimize_time, t_data)
 
@@ -71,6 +72,6 @@ if __name__ == '__main__':
             model.save_networks('latest')
             model.save_networks(epoch)
 
-        print(" ".join(f"{k}: {v * len(data['A']) / len(dataset):.3f}" for k, v in losses.items() if k != "NCE_List"))
+        print(" ".join(f"{k}: {v:.3f}" for k, v in losses.items() if k != "NCE_List"))
         print('End of epoch %d / %d \t Time Taken: %d sec' % (epoch, opt.n_epochs + opt.n_epochs_decay, time.time() - epoch_start_time))
         model.update_learning_rate()                     # update learning rates at the end of every epoch.
