@@ -52,7 +52,7 @@ if __name__ == '__main__':
                 losses = model.get_current_losses()
 
                 # Print
-                message = f"(epoch: {epoch}, iters: {iters}, time: {t_comp:.3f}, data: {t_data:.3f}) "
+                message = f"(epoch: {epoch}, iters: {epoch_iter}, time: {optimize_time:.3f}, data: {t_data:.3f}) "
                 
                 for k, v in losses.items():
                     if k == "NCE_List":
