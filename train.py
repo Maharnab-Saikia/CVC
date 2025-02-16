@@ -35,7 +35,6 @@ if __name__ == '__main__':
                 t_data = iter_start_time - iter_data_time
 
             batch_size = data["A"].size(0)
-            print(data["A"].shape)
             total_iters += batch_size
             epoch_iter += batch_size
             torch.cuda.synchronize()
