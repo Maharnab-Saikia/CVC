@@ -54,7 +54,7 @@ if __name__ == '__main__':
                 # Print
                 message = f"(epoch: {epoch}, iters: {epoch_iter}, time: {optimize_time:.3f}, data: {t_data:.3f}) "
                 message += " ".join(f"{k}: {v:.3f}" for k, v in losses.items() if k != "NCE_List")
-                print(message)
+                #print(message)
 
                 #visualizer.print_current_losses(epoch, epoch_iter, float(epoch_iter) / dataset_size, losses, optimize_time, t_data)
 
@@ -71,5 +71,6 @@ if __name__ == '__main__':
             model.save_networks('latest')
             model.save_networks(epoch)
 
+        print(" ".join(f"{k}: {v * data["A"] / len(dataset):.3f}" for k, v in losses.items() if k != "NCE_List"))
         print('End of epoch %d / %d \t Time Taken: %d sec' % (epoch, opt.n_epochs + opt.n_epochs_decay, time.time() - epoch_start_time))
         model.update_learning_rate()                     # update learning rates at the end of every epoch.
