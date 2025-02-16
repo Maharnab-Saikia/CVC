@@ -3,8 +3,8 @@ import torch
 from options.train_options import TrainOptions
 from data import create_dataset
 from models import create_model
-from util.visualizer import Visualizer
-from util.visualizer import writer
+#from util.visualizer import Visualizer
+#from util.visualizer import writer
 import numpy as np
 
 
@@ -16,8 +16,8 @@ if __name__ == '__main__':
     model = create_model(opt)      # create a model given opt.model and other options
     print('The number of training images = %d' % dataset_size)
 
-    visualizer = Visualizer(opt)   # create a visualizer that display/save images and plots
-    opt.visualizer = visualizer
+    #visualizer = Visualizer(opt)   # create a visualizer that display/save images and plots
+    #opt.visualizer = visualizer
     total_iters = 0                # the total number of training iterations
 
     optimize_time = 0.1
@@ -50,7 +50,20 @@ if __name__ == '__main__':
 
             if total_iters % opt.print_freq == 0:    # print training losses and save logging information to the disk
                 losses = model.get_current_losses()
-                visualizer.print_current_losses(epoch, epoch_iter, float(epoch_iter) / dataset_size, losses, optimize_time, t_data)
+
+                # Print
+                message = f"(epoch: {epoch}, iters: {iters}, time: {t_comp:.3f}, data: {t_data:.3f}) "
+                
+                for k, v in losses.items():
+                    if k == "NCE_List":
+                        for layer, nce_loss in enumerate(v):
+                            message += f"{k} Loss_{layer}: {nce_loss:.3f} "
+                    else:
+                        message += f"{k}: {v:.3f} "
+                
+                print(message)
+
+                #visualizer.print_current_losses(epoch, epoch_iter, float(epoch_iter) / dataset_size, losses, optimize_time, t_data)
 
             if total_iters % opt.save_latest_freq == 0:   # cache our latest model every <save_latest_freq> iterations
                 print('saving the latest model (epoch %d, total_iters %d)' % (epoch, total_iters))
