@@ -167,19 +167,18 @@ class BaseModel(ABC):
         return errors_ret
 
     def save_checkpoint(self, epoch):
-        """Saves model, optimizer, and scheduler states."""
+        """Saves model and optimizer state."""
         checkpoint = {
             'epoch': epoch,
             'model_state_dict': {name: getattr(self, 'net' + name).state_dict() for name in self.model_names},
-            'optimizer_state_dict': {i: opt.state_dict() for i, opt in enumerate(self.optimizers)},
-            'scheduler_state_dict': {i: sch.state_dict() for i, sch in enumerate(self.schedulers)} if hasattr(self, 'schedulers') else None
+            'optimizer_state_dict': {i: opt.state_dict() for i, opt in enumerate(self.optimizers)}
         }
         checkpoint_path = os.path.join(self.save_dir, 'latest_checkpoint.pth')
         torch.save(checkpoint, checkpoint_path)
         print(f"Checkpoint saved at epoch {epoch}")
 
     def load_checkpoint(self):
-        """Loads model, optimizer, and scheduler states if a checkpoint exists."""
+        """Loads model and optimizer state if a checkpoint exists."""
         checkpoint_path = os.path.join(self.save_dir, 'latest_checkpoint.pth')
         if os.path.exists(checkpoint_path):
             checkpoint = torch.load(checkpoint_path, map_location=self.device)
@@ -190,10 +189,6 @@ class BaseModel(ABC):
             for i, opt in enumerate(self.optimizers):
                 opt.load_state_dict(checkpoint['optimizer_state_dict'][i])
                 
-            if 'scheduler_state_dict' in checkpoint and checkpoint['scheduler_state_dict'] is not None:
-                for i, sch in enumerate(self.schedulers):
-                    sch.load_state_dict(checkpoint['scheduler_state_dict'][i])
-                    
             print(f"Resumed training from epoch {checkpoint['epoch'] + 1}")
             return checkpoint['epoch'] + 1  
         else:
