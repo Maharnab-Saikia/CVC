@@ -197,12 +197,9 @@ class BaseModel(ABC):
                 for i, sch in enumerate(self.schedulers):
                     sch.load_state_dict(checkpoint['scheduler_state_dict'][i])
 
-            self.opt.epoch_count = checkpoint['epoch'] + 1
-
             print(f"Resumed training from epoch {self.opt.epoch_count}")
         else:
             print("No checkpoint found, starting from scratch.")
-            self.opt.epoch_count = 1
 
     def save_networks(self, epoch):
         """Save all the networks to the disk.
