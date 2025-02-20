@@ -83,6 +83,7 @@ if __name__ == '__main__':
             print('Saving the model at the end of epoch %d, iters %d' % (epoch, total_iters))
             model.save_networks('latest')
             model.save_networks(epoch)
+            model.save_checkpoint(epoch)
 
         print(f"\n[Epoch {epoch}/{opt.n_epochs + opt.n_epochs_decay}] "
         f"Loss => G: {epoch_g_loss:.4f} | D: {epoch_d_loss:.4f} | NCE: {epoch_nce_loss:.4f} "
