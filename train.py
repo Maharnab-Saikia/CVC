@@ -5,7 +5,6 @@ from data import create_dataset
 from models import create_model
 #from util.visualizer import Visualizer
 #from util.visualizer import writer
-from tqdm.auto import tqdm
 import numpy as np
 
 
@@ -24,7 +23,7 @@ if __name__ == '__main__':
     optimize_time = 0.1
 
     times = []
-    for epoch in tqdm(range(opt.epoch_count, opt.n_epochs + opt.n_epochs_decay + 1), desc="Training"):    # outer loop for different epochs; we save the model by <epoch_count>, <epoch_count>+<save_latest_freq>
+    for epoch in range(opt.epoch_count, opt.n_epochs + opt.n_epochs_decay + 1):    # outer loop for different epochs; we save the model by <epoch_count>, <epoch_count>+<save_latest_freq>
         epoch_start_time = time.time()  # timer for entire epoch
         iter_data_time = time.time()    # timer for data loading per iteration
         epoch_iter = 0                  # the number of training iterations in current epoch, reset to 0 every epoch
@@ -81,7 +80,7 @@ if __name__ == '__main__':
             iter_data_time = time.time()
 
         if epoch % opt.save_epoch_freq == 0:              # cache our model every <save_epoch_freq> epochs
-            print('saving the model at the end of epoch %d, iters %d' % (epoch, total_iters))
+            print('Saving the model at the end of epoch %d, iters %d' % (epoch, total_iters))
             model.save_networks('latest')
             model.save_networks(epoch)
 
