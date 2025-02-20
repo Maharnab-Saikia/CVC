@@ -20,10 +20,6 @@ if __name__ == '__main__':
     #visualizer = Visualizer(opt)   # create a visualizer that display/save images and plots
     #opt.visualizer = visualizer
     total_iters = 0                # the total number of training iterations
-
-    epoch_g_loss = 0.0
-    epoch_d_loss = 0.0
-    epoch_nce_loss = 0.0
     
     optimize_time = 0.1
 
@@ -33,6 +29,10 @@ if __name__ == '__main__':
         iter_data_time = time.time()    # timer for data loading per iteration
         epoch_iter = 0                  # the number of training iterations in current epoch, reset to 0 every epoch
 
+        epoch_g_loss = 0.0
+        epoch_d_loss = 0.0
+        epoch_nce_loss = 0.0
+        
         dataset.set_epoch(epoch)
         for i, data in enumerate(dataset):  # inner loop within one epoch
             iter_start_time = time.time()  # timer for computation per iteration
@@ -58,7 +58,7 @@ if __name__ == '__main__':
 
                 # Print
                 message = f"(epoch: {epoch}, iters: {epoch_iter}, time: {optimize_time:.3f}, data: {t_data:.3f}) "
-                message += " ".join(f"{k}: {v:.3f}" for k, v in losses.items() if k != "NCE_List")
+                #message += " ".join(f"{k}: {v:.3f}" for k, v in losses.items() if k != "NCE_List")
                 #print(message)
 
                 for k, v in losses.items():
