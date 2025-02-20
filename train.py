@@ -84,6 +84,8 @@ if __name__ == '__main__':
             model.save_networks('latest')
             model.save_networks(epoch)
 
-        print(f"\nLoss in Epoch => G: {epoch_g_loss:.4f} || D: {epoch_d_loss:.4f} || NCE: {epoch_nce_loss:.4f}")
-        print('End of epoch (%d / %d) || Time Taken: %d sec' % (epoch, opt.n_epochs + opt.n_epochs_decay, time.time() - epoch_start_time))
+        print(f"\n[Epoch {epoch}/{opt.n_epochs + opt.n_epochs_decay}] "
+        f"Loss => G: {epoch_g_loss:.4f} | D: {epoch_d_loss:.4f} | NCE: {epoch_nce_loss:.4f} "
+        f"|| Time Taken: {int(time.time() - epoch_start_time)} sec")
+
         model.update_learning_rate()                     # update learning rates at the end of every epoch.
