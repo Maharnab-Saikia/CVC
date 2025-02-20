@@ -1222,6 +1222,7 @@ class ResnetGenerator(nn.Module):
         self.model = nn.Sequential(*model)
 
     def forward(self, x, layers=[], encode_only=False):
+        x = x.unsqueeze(1)
         if not layers:
             return self.model(x)
         else:
