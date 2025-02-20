@@ -87,16 +87,12 @@ class BaseModel(ABC):
         pass
 
     def setup(self, opt):
-        """Load and print networks; create schedulers
-
-        Parameters:
-            opt (Option class) -- stores all the experiment flags; needs to be a subclass of BaseOptions
-        """
+        """Load networks and schedulers, and resume from the last checkpoint if available."""
         if self.isTrain:
             self.schedulers = [networks.get_scheduler(optimizer, opt) for optimizer in self.optimizers]
         if not self.isTrain or opt.continue_train:
-            load_suffix = opt.epoch
-            self.load_networks(load_suffix)
+            start_epoch = self.load_checkpoint()
+            return start_epoch  # Return the last saved epoch
 
         self.print_networks(opt.verbose)
 
@@ -169,6 +165,40 @@ class BaseModel(ABC):
                 else:
                     errors_ret[name] = float(getattr(self, 'loss_' + name))  # float(...) works for both scalar tensor and float number
         return errors_ret
+
+    def save_checkpoint(self, epoch):
+        """Saves model, optimizer, and scheduler states."""
+        checkpoint = {
+            'epoch': epoch,
+            'model_state_dict': {name: getattr(self, 'net' + name).state_dict() for name in self.model_names},
+            'optimizer_state_dict': {i: opt.state_dict() for i, opt in enumerate(self.optimizers)},
+            'scheduler_state_dict': {i: sch.state_dict() for i, sch in enumerate(self.schedulers)} if hasattr(self, 'schedulers') else None
+        }
+        checkpoint_path = os.path.join(self.save_dir, 'latest_checkpoint.pth')
+        torch.save(checkpoint, checkpoint_path)
+        print(f"Checkpoint saved at epoch {epoch}")
+
+    def load_checkpoint(self):
+        """Loads model, optimizer, and scheduler states if a checkpoint exists."""
+        checkpoint_path = os.path.join(self.save_dir, 'latest_checkpoint.pth')
+        if os.path.exists(checkpoint_path):
+            checkpoint = torch.load(checkpoint_path, map_location=self.device)
+            
+            for name in self.model_names:
+                getattr(self, 'net' + name).load_state_dict(checkpoint['model_state_dict'][name])
+                
+            for i, opt in enumerate(self.optimizers):
+                opt.load_state_dict(checkpoint['optimizer_state_dict'][i])
+                
+            if 'scheduler_state_dict' in checkpoint and checkpoint['scheduler_state_dict'] is not None:
+                for i, sch in enumerate(self.schedulers):
+                    sch.load_state_dict(checkpoint['scheduler_state_dict'][i])
+                    
+            print(f"Resumed training from epoch {checkpoint['epoch'] + 1}")
+            return checkpoint['epoch'] + 1  
+        else:
+            print("No checkpoint found, starting from scratch.")
+            return 0
 
     def save_networks(self, epoch):
         """Save all the networks to the disk.
