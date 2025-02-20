@@ -176,6 +176,11 @@ class BaseModel(ABC):
         Parameters:
             epoch (int) -- current epoch; used in the file name '%s_net_%s.pth' % (epoch, name)
         """
+        for i in self.optimizers:
+            print(i)
+            #optimizer = getattr(self, 'optimizer
+        for i in self.schedulers:
+            print(i)
         for name in self.model_names:
             if isinstance(name, str):
                 save_filename = '%s_net_%s.pth' % (epoch, name)
