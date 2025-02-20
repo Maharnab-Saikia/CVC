@@ -21,6 +21,10 @@ if __name__ == '__main__':
     #opt.visualizer = visualizer
     total_iters = 0                # the total number of training iterations
 
+    epoch_g_loss = 0.0
+    epoch_d_loss = 0.0
+    epoch_nce_loss = 0.0
+    
     optimize_time = 0.1
 
     times = []
@@ -57,6 +61,15 @@ if __name__ == '__main__':
                 message += " ".join(f"{k}: {v:.3f}" for k, v in losses.items() if k != "NCE_List")
                 #print(message)
 
+                for k, v in losses.items():
+                    if k != 'NCE_List':
+                        if k == 'G':
+                            epoch_g_loss += v * opt.batch_size / dataset_size
+                        if k == 'D':
+                            epoch_d_loss += v * opt.batch_size / dataset_size
+                        if k == 'NCE':
+                            epoch_nce_loss += v * opt.batch_size / dataset_size
+
                 #visualizer.print_current_losses(epoch, epoch_iter, float(epoch_iter) / dataset_size, losses, optimize_time, t_data)
 
             if total_iters % opt.save_latest_freq == 0:   # cache our latest model every <save_latest_freq> iterations
@@ -72,6 +85,6 @@ if __name__ == '__main__':
             model.save_networks('latest')
             model.save_networks(epoch)
 
-        print(" ".join(f"{k}: {v:.3f}" for k, v in losses.items() if k != "NCE_List"))
+        print(f"Loss in Epoch => G: {epoch_g_loss} || D: {epoch_d_loss} || NCE: {epoch_nce_loss}")
         print('End of epoch %d / %d \t Time Taken: %d sec' % (epoch, opt.n_epochs + opt.n_epochs_decay, time.time() - epoch_start_time))
         model.update_learning_rate()                     # update learning rates at the end of every epoch.
