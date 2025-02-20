@@ -177,13 +177,13 @@ class BaseModel(ABC):
             },
             'optimizer_state_dict': {i: opt.state_dict() for i, opt in enumerate(self.optimizers)}
         }
-        checkpoint_path = os.path.join(self.save_dir, 'latest_checkpoint.pth')
+        checkpoint_path = os.path.join(self.save_dir, f'latest_checkpoint_{epoch}.pth')
         torch.save(checkpoint, checkpoint_path)
         print(f"Checkpoint saved at epoch {epoch}")
 
     def load_checkpoint(self):
         """Loads model, optimizer, and scheduler states if a checkpoint exists."""
-        checkpoint_path = os.path.join(self.save_dir, 'latest_checkpoint.pth')
+        checkpoint_path = os.path.join(self.save_dir, f'latest_checkpoint_{opt.epoch_count - 1}.pth')
         if os.path.exists(checkpoint_path):
             checkpoint = torch.load(checkpoint_path, map_location=self.device, weights_only=True)
 
