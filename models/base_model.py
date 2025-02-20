@@ -91,7 +91,7 @@ class BaseModel(ABC):
         if self.isTrain:
             self.schedulers = [networks.get_scheduler(optimizer, opt) for optimizer in self.optimizers]
         if not self.isTrain or opt.continue_train:
-            self.load_checkpoint()
+            self.load_checkpoint(opt)
 
         self.print_networks(opt.verbose)
 
@@ -175,13 +175,13 @@ class BaseModel(ABC):
                 else getattr(self, 'net' + name).state_dict()  
                 for name in self.model_names
             },
-            'optimizer_state_dict': {i: opt.state_dict() for i, opt in enumerate(self.optimizers)}
+            'optimizer_state_dict': {i: optim.state_dict() for i, optim in enumerate(self.optimizers)}
         }
         checkpoint_path = os.path.join(self.save_dir, f'latest_checkpoint_{epoch}.pth')
         torch.save(checkpoint, checkpoint_path)
         print(f"Checkpoint saved at epoch {epoch}")
 
-    def load_checkpoint(self):
+    def load_checkpoint(self, opt):
         """Loads model, optimizer, and scheduler states if a checkpoint exists."""
         checkpoint_path = os.path.join(self.save_dir, f'latest_checkpoint_{opt.epoch_count - 1}.pth')
         if os.path.exists(checkpoint_path):
@@ -190,8 +190,8 @@ class BaseModel(ABC):
             for name in self.model_names:
                 getattr(self, 'net' + name).load_state_dict(checkpoint['model_state_dict'][name])
 
-            for i, opt in enumerate(self.optimizers):
-                opt.load_state_dict(checkpoint['optimizer_state_dict'][i])
+            for i, optim in enumerate(self.optimizers):
+                optim.load_state_dict(checkpoint['optimizer_state_dict'][i])
 
             if 'scheduler_state_dict' in checkpoint and checkpoint['scheduler_state_dict'] is not None:
                 for i, sch in enumerate(self.schedulers):
