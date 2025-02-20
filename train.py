@@ -44,6 +44,7 @@ if __name__ == '__main__':
             epoch_iter += batch_size
             torch.cuda.synchronize()
             optimize_start_time = time.time()
+            print(data.shape)
             model.set_input(data)         # unpack data from dataset and apply preprocessing
             if epoch == opt.epoch_count and i == 0:
                 model.data_dependent_initialize()
