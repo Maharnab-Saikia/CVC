@@ -169,7 +169,12 @@ class BaseModel(ABC):
         """Saves model and optimizer state."""
         checkpoint = {
             'epoch': epoch,
-            'model_state_dict': {name: getattr(self, 'net' + name).state_dict() for name in self.model_names},
+            'model_state_dict': {
+                name: getattr(self, 'net' + name).module.state_dict() 
+                if isinstance(getattr(self, 'net' + name), torch.nn.DataParallel)  
+                else getattr(self, 'net' + name).state_dict()  
+                for name in self.model_names
+            },
             'optimizer_state_dict': {i: opt.state_dict() for i, opt in enumerate(self.optimizers)}
         }
         checkpoint_path = os.path.join(self.save_dir, 'latest_checkpoint.pth')
@@ -180,7 +185,7 @@ class BaseModel(ABC):
         """Loads model, optimizer, and scheduler states if a checkpoint exists."""
         checkpoint_path = os.path.join(self.save_dir, 'latest_checkpoint.pth')
         if os.path.exists(checkpoint_path):
-            checkpoint = torch.load(checkpoint_path, map_location=self.device)
+            checkpoint = torch.load(checkpoint_path, map_location=self.device, weights_only=True)
 
             for name in self.model_names:
                 getattr(self, 'net' + name).load_state_dict(checkpoint['model_state_dict'][name])
