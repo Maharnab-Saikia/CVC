@@ -1224,7 +1224,7 @@ class ResnetGenerator(nn.Module):
     def forward(self, x, layers=[], encode_only=False):
         x = x.unsqueeze(1)
         if not layers:
-            return self.model(x)
+            return self.model(x).squeeze(1)
         else:
             features=[]
             for i, layer in enumerate(self.model):
