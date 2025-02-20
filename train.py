@@ -63,7 +63,7 @@ if __name__ == '__main__':
 
                 for k, v in losses.items():
                     if k != 'NCE_List':
-                        if k == 'G':
+                        if k == 'G_GAN':
                             epoch_g_loss += v * opt.batch_size / dataset_size
                         if k == 'D':
                             epoch_d_loss += v * opt.batch_size / dataset_size
@@ -85,6 +85,6 @@ if __name__ == '__main__':
             model.save_networks('latest')
             model.save_networks(epoch)
 
-        print(f"Loss in Epoch => G: {epoch_g_loss} || D: {epoch_d_loss} || NCE: {epoch_nce_loss}")
+        print(f"\nLoss in Epoch => G: {epoch_g_loss:.4f} || D: {epoch_d_loss:.4f} || NCE: {epoch_nce_loss:.4f}")
         print('End of epoch %d / %d \t Time Taken: %d sec' % (epoch, opt.n_epochs + opt.n_epochs_decay, time.time() - epoch_start_time))
         model.update_learning_rate()                     # update learning rates at the end of every epoch.
