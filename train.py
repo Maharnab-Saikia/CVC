@@ -72,11 +72,11 @@ if __name__ == '__main__':
 
                 #visualizer.print_current_losses(epoch, epoch_iter, float(epoch_iter) / dataset_size, losses, optimize_time, t_data)
 
-            if total_iters % opt.save_latest_freq == 0:   # cache our latest model every <save_latest_freq> iterations
+            """if total_iters % opt.save_latest_freq == 0:   # cache our latest model every <save_latest_freq> iterations
                 print('saving the latest model (epoch %d, total_iters %d)' % (epoch, total_iters))
                 print(opt.name)  # it's useful to occasionally show the experiment name on console
                 save_suffix = 'iter_%d' % total_iters if opt.save_by_iter else 'latest'
-                model.save_networks(save_suffix)
+                model.save_networks(save_suffix)"""
 
             iter_data_time = time.time()
 
@@ -86,5 +86,5 @@ if __name__ == '__main__':
             model.save_networks(epoch)
 
         print(f"\nLoss in Epoch => G: {epoch_g_loss:.4f} || D: {epoch_d_loss:.4f} || NCE: {epoch_nce_loss:.4f}")
-        print('End of epoch %d / %d \t Time Taken: %d sec' % (epoch, opt.n_epochs + opt.n_epochs_decay, time.time() - epoch_start_time))
+        print('End of epoch (%d / %d) || Time Taken: %d sec' % (epoch, opt.n_epochs + opt.n_epochs_decay, time.time() - epoch_start_time))
         model.update_learning_rate()                     # update learning rates at the end of every epoch.
